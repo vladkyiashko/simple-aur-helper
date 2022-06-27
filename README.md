@@ -16,9 +16,9 @@ Set executing permission
 chmod +x simple-aur-helper.sh
 ```
 
-Install rsync
+Install git and rsync
 ```sh
-sudo pacman -S --needed git
+sudo pacman -S --needed git rsync
 ```
 
 ## Usage
