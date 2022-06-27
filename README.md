@@ -1,5 +1,5 @@
 # simple-aur-helper
-simple-aur-helper is a CLI application to simplify the the usage of [Arch User Repository (AUR)](https://aur.archlinux.org/).
+simple-aur-helper is a CLI application made to simplify the the usage of [Arch User Repository (AUR)](https://aur.archlinux.org/).
 It can install/remove/upgrade AUR packages, get dependecies from Arch repository and fetch the necessary PGP keys. It has minimum dependencies.
 
 ## Installation
