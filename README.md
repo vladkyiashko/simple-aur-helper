@@ -3,6 +3,7 @@ simple-aur-helper is a CLI application made to simplify the the usage of [Arch U
 It can install/remove/upgrade AUR packages, get dependecies from Arch repository and fetch the necessary PGP keys. It has minimum dependencies.
 
 ## Installation
+Get the script
 ```sh
 wget https://github.com/vladkyiashko/simple-aur-helper/blob/main/simple-aur-helper.sh
 ```
@@ -15,6 +16,7 @@ Set executing permission
 chmod +x simple-aur-helper.sh
 ```
 
+Install rsync
 ```sh
 sudo pacman -S --needed git
 ```
