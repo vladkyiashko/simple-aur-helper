@@ -49,10 +49,10 @@ check_missing_pgp_keys() {
 			while true; do
 				read -p "Import pgp key $pgpkey? (y/n) " yn
 				case $yn in
-					[yY]) 
+					[yY])
 						gpg --recv-keys $pgpkey
 						break;;
-					[nN]) 
+					[nN])
 						echo "Cancel import pgp key; package installation may fail"
 						break;;
 				esac
@@ -112,14 +112,16 @@ set_has_update_count() {
 
 			git checkout . > /dev/null 2>&1;
 
-	    	if [[ `git status --porcelain --untracked-files=no` ]]; then
-				echo "There is an update for ${package_dir::-1}"
+			git fetch
+			if [ ! $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+				sed 's/\// /g') | cut -f1) ]; then
 				((has_update_count++))
-	    	else 
+				echo "There is an update for ${package_dir::-1}"
+			else
 				echo "${package_dir::-1} is up to date"
-	    	fi
+			fi
 	    done
-	else    
+	else
 		echo "$AUR_PATH is empty or not a folder; exit"
 	    exit 0
     fi
@@ -142,8 +144,10 @@ upgrade_loop() {
 			continue
 		fi
 
+		git fetch
 		cd $AUR_PATH/$package_dir
-		if [[ `git status --porcelain --untracked-files=no` ]]; then
+		if [ ! $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+			sed 's/\// /g') | cut -f1) ]; then
 			check_missing_pgp_keys
 			git pull &&
 			makepkg -sic
