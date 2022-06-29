@@ -143,8 +143,7 @@ upgrade_loop() {
 		if ! pacman -Qs ${package_dir::-1} > /dev/null; then
 			continue
 		fi
-
-		git fetch
+		
 		cd $AUR_PATH/$package_dir
 		if [ ! $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
 			sed 's/\// /g') | cut -f1) ]; then
