@@ -32,11 +32,11 @@ install_loop() {
 
 try_makepkg_install_clean() {
 	if ! makepkg -sic; then
-		git clean -dfX
+		git clean -fd
 		rm -rf "$AUR_PATH/$package_name"
 		exit 0
 	else
-		git clean -dfX
+		git clean -fd
 	fi		
 }
 
@@ -150,7 +150,7 @@ upgrade_loop() {
 			check_missing_pgp_keys
 			git pull &&
 			makepkg -sic
-			git clean -dfX
+			git clean -fd
 		fi
 	done
 }
