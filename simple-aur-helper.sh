@@ -15,7 +15,7 @@ install_loop() {
 
 		if [[ ! $(git ls-remote $BASE_GIT_CLONE_URL$package_name.git) ]]; then
 			echo "Can't find git repository $BASE_GIT_CLONE_URL$package_name.git; package name $package_name may be incorrect; exit"
-			exit 0		
+			exit 1
 		fi	
 
 		cd $AUR_PATH
@@ -34,7 +34,7 @@ try_makepkg_install_clean() {
 	if ! makepkg -sic; then
 		git clean -fd
 		rm -rf "$AUR_PATH/$package_name"
-		exit 0
+		exit 1
 	else
 		git clean -fd
 	fi		
@@ -49,10 +49,10 @@ check_missing_pgp_keys() {
 			while true; do
 				read -p "Import pgp key $pgpkey? (y/n) " yn
 				case $yn in
-					[yY])
+					[yY]) 
 						gpg --recv-keys $pgpkey
 						break;;
-					[nN])
+					[nN]) 
 						echo "Cancel import pgp key; package installation may fail"
 						break;;
 				esac
@@ -64,7 +64,7 @@ check_missing_pgp_keys() {
 check_empty_install_argument() {
 	if [ -z "$1" ]; then
         echo "Empty argument; try '--install Foo'"
-        exit 0
+        exit 1
 	fi
 }
 
@@ -72,7 +72,7 @@ check_create_aur_path_dir() {
 	if [ ! -d $AUR_PATH ]; then
 		if ! mkdir -p $AUR_PATH; then
 			echo "can't create folder at path $AUR_PATH; exit"
-			exit 0
+			exit 1
 		fi
 	fi
 }
@@ -80,7 +80,7 @@ check_create_aur_path_dir() {
 check_empty_remove_argument() {
 	if [ -z "$1" ]; then
       echo "Empty argument; try '--remove Foo'"
-      exit 0
+      exit 1
 	fi
 }
 
@@ -121,9 +121,9 @@ set_has_update_count() {
 				echo "${package_dir::-1} is up to date"
 			fi
 	    done
-	else
+	else    
 		echo "$AUR_PATH is empty or not a folder; exit"
-	    exit 0
+	    exit 1
     fi
 }
 
@@ -132,7 +132,7 @@ confirm_upgrade() {
 		read -p "$has_update_count updates available. Upgrade? (y/n) " yn
 		case $yn in
 			[yY] ) break;;
-			[nN] ) exit 1;;
+			[nN] ) exit 0;;
 		esac
 	done
 }
@@ -143,7 +143,7 @@ upgrade_loop() {
 		if ! pacman -Qs ${package_dir::-1} > /dev/null; then
 			continue
 		fi
-		
+
 		cd $AUR_PATH/$package_dir
 		if [ ! $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
 			sed 's/\// /g') | cut -f1) ]; then
@@ -158,7 +158,7 @@ upgrade_loop() {
 check_no_updates() {
 	if [[ "$has_update_count" -eq 0 ]]; then
 		echo "$has_update_count updates available"
-		exit 1
+		exit 0
 	fi
 }
 
@@ -167,18 +167,18 @@ case "$1" in
 		check_empty_install_argument "${@:2}"
 		check_create_aur_path_dir
 		install_loop "${@:2}"
-		exit 1;;
+		exit 0;;
 	"--remove")
 		check_empty_remove_argument "${@:2}"
 		remove_loop "${@:2}"
-		exit 1;;
+		exit 0;;
 	"--upgrade")
 		set_has_update_count
 		check_no_updates
 		confirm_upgrade
 		upgrade_loop	
-		exit 1;;
+		exit 0;;
 	*)
 		echo "Invalid argument; try '--install Foo' or '--remove Foo' or '--upgrade'"
-		exit 0;;
+		exit 1;;
 esac
